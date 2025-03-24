@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
+import imagebackground from '@/assets/rafayraja.avif'
 
 const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) => {
   const [email, setEmail] = useState('');
@@ -54,7 +55,10 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+      <div
+      className="flex items-center justify-center min-h-screen w-full bg-cover bg-center"
+      style={{ backgroundImage: `url(${imagebackground})` }}
+    >
         <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">Welcome Back!</h2>
           <form onSubmit={handleSubmit}>

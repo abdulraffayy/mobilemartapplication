@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import imagebackground from '@/assets/rafayraja.avif'
 
 const Signup = () => {
   const [fullName, setFullName] = useState('');
@@ -40,8 +41,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 bg-gradient-to-r from-blue-500 to-purple-600">
-      <form className="bg-white p-8 rounded-lg shadow-lg w-96" onSubmit={handleSubmit}>
+    <div
+    className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100 bg-cover bg-center"
+    style={{ backgroundImage: `url(${imagebackground})` }}
+  
+  >   
+     <form className="bg-white p-8 rounded-lg shadow-lg w-96" onSubmit={handleSubmit}>
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
         
         <input 

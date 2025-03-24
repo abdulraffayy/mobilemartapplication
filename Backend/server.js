@@ -12,6 +12,10 @@ const cors = require('cors');
 const userRoutes = require("./routes/userRoutes");
 const iphoneRoutes = require("./routes/iphoneroute");
 
+ // Correct file name
+
+
+
  // Populate the database with iPhones
 
 connectDB();
@@ -25,14 +29,11 @@ app.use(cors());
 
 // Middleware to parse JSON
 app.use(express.json());  
-
-
-
-
-
 // use iphone routes for
 
 app.use("/api", iphoneRoutes);  
+
+
 
 
 
@@ -44,8 +45,7 @@ app.get("/", (req, res) => {
 });
 
 
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

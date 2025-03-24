@@ -8,6 +8,7 @@ import Iphone from './Iphone/Iphone';
 import { useState } from 'react';
 import ForgetPassword from './ForgetPassword/ForgetPassword';
 import Otp from './ForgetPassword/Otp/Otp';
+import ResetPassword from './ForgetPassword/ResetPassword/ResetPassword';
 
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/forgetpassword" element={<ForgetPassword/>} />
             <Route path="/Otp" element={<Otp/>} />
+            <Route path="/ResetPassword" element={<ResetPassword/>} />
+
 
 
           </Routes>
