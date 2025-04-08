@@ -11,7 +11,9 @@ const Layout = ({ children, isLoggedIn, onLogout }: LayoutProps) => {
   return (
     <>
       {isLoggedIn && <Navbar onLogout={onLogout} />}
+      <div className='mt-[56px]'>
       {children}
+        </div>
     </>
   );
 };

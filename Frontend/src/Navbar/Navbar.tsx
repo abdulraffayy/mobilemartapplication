@@ -46,7 +46,7 @@ const Navbar = ({ onLogout }: NavbarProps) => {
   ];
 
   return (
-    <nav className={`fixed w-full z-50 bg-white text-gray-800 shadow-lg transition-all duration-300 ${isScrolled ? 'p-2' : 'py-2'}`}>
+    <nav className={`fixed top-0 w-full z-50 bg-white text-gray-800 shadow-lg transition-all duration-300 min-h-[56px] ${isScrolled ? 'p-2' : 'py-2'}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}

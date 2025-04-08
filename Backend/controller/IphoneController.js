@@ -41,6 +41,12 @@ exports.updateClientById = async (req, res) => {
 
 exports.deleteClientById = async (req, res) => {
     const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid product ID format' });
+    }
+
     try {
         const deletedClient = await Iphone.findByIdAndDelete(id);
         if (!deletedClient) {
@@ -49,7 +55,7 @@ exports.deleteClientById = async (req, res) => {
         res.status(200).json({ message: 'Client deleted successfully' });
     } catch (error) {
         console.error('Error deleting client:', error);
-        res.status(500).json({ message: 'Internal server error' }); 
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
