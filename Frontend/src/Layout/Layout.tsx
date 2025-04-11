@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import Navbar from '../Navbar/Navbar';
+import { useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,12 +9,25 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, isLoggedIn, onLogout }: LayoutProps) => {
+  const location = useLocation();
+  const hideNavbarPaths = [
+    '/AdminDashboard',
+    '/admin/Acessories',
+    '/admin/Laptops',
+    '/admin/Android',
+    '/admin/Iphone',
+    '/login',
+    '/signup',
+    '/forgetpassword'
+  ];
+  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
+
   return (
     <>
-      {isLoggedIn && <Navbar onLogout={onLogout} />}
-      <div className='mt-[56px]'>
-      {children}
-        </div>
+      {isLoggedIn && !shouldHideNavbar && <Navbar onLogout={onLogout} />}
+      <div className=''>
+        {children}
+      </div>
     </>
   );
 };

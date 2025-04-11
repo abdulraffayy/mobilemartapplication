@@ -10,13 +10,12 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
   const navigate = useNavigate();
 
   useEffect(() => {
     // If user is already logged in, redirect to home
     if (Cookies.get('token')) {
-      navigate('/home');
+      navigate('/AdminDashboard');
     }
   }, [navigate]);
 
@@ -36,10 +35,19 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
 
       if (response.status === 200) {
         if (response.data.token) {
+          // Store token in cookies
           Cookies.set('token', response.data.token, { expires: 1 });
           setSuccessMessage('Login successful!');
           setIsLoggedIn(true);
-          navigate("/home");
+
+          // Check user role and redirect accordingly
+          if (response.data.role === 'admin') {
+            // For admin users
+            navigate("/AdminDashboard");
+          } else {
+            // For regular users
+            navigate("/home");
+          }
         } else {
           console.error('Token is undefined');
           setError('Login failed. Please try again.');
@@ -55,6 +63,9 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
   const handleForgotPassword = () => {
     navigate("/forgetpassword");
   };
+
+  // Only show Navbar if not on AdminDashboard
+
 
   return (
     <div
@@ -111,8 +122,8 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 Login.propTypes = {
   setIsLoggedIn: PropTypes.func.isRequired,
