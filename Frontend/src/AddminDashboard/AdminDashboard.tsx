@@ -71,11 +71,11 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <div
         className={cn(
-          "bg-white shadow-lg transition-all duration-300 fixed h-full",
+          "bg-[#1C2434] text-white shadow-lg transition-all duration-300 fixed h-full z-10",
           isCollapsed ? "w-20" : "w-64"
         )}
       >
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
           {!isCollapsed && <h1 className="text-xl font-bold">Admin Panel</h1>}
           <button 
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="p-2 rounded-lg hover:bg-white/10 text-white"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
                 <Link
                   to={item.path}
                   className={cn(
-                    "flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors",
+                    "flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors text-white",
                     isCollapsed ? "justify-center" : "space-x-3"
                   )}
                 >
@@ -108,10 +108,10 @@ const AdminDashboard = () => {
           </ul>
         </nav>
 
-        <div className="absolute bottom-0 w-full p-4 border-t">
+        <div className="absolute bottom-0 w-full p-4 border-t border-white/10">
           <button 
             onClick={handleLogout}
-            className="flex items-center w-full p-3 rounded-lg hover:bg-gray-100"
+            className="flex items-center w-full p-3 rounded-lg hover:bg-white/10 text-white"
           >
             <LogOut className="w-6 h-6" />
             {!isCollapsed && <span className="ml-3">Logout</span>}
@@ -120,7 +120,12 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 overflow-auto">
+      <div 
+        className={cn(
+          "transition-all duration-300",
+          isCollapsed ? "ml-20 w-[calc(100%-5rem)]" : "ml-64 w-[calc(100%-16rem)]"
+        )}
+      >
         {renderContent()}
       </div>
     </div>
