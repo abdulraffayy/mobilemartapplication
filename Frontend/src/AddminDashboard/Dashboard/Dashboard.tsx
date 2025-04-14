@@ -1,6 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Users, ShoppingCart, DollarSign, Package } from "lucide-react";
 import BackgoundImage from "../../assets/rafayraja.avif"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "../../components/ui/chart";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  BarChart,
+  Bar,
+} from "recharts";
 
 const Dashboard = () => {
   const stats = [
@@ -30,6 +44,24 @@ const Dashboard = () => {
     }
   ];
 
+  // Sample data for charts
+  const salesData = [
+    { name: "Jan", sales: 4000 },
+    { name: "Feb", sales: 3000 },
+    { name: "Mar", sales: 5000 },
+    { name: "Apr", sales: 2780 },
+    { name: "May", sales: 1890 },
+    { name: "Jun", sales: 2390 },
+  ];
+
+  const productData = [
+    { name: "Phones", value: 400 },
+    { name: "Laptops", value: 300 },
+    { name: "Tablets", value: 200 },
+    { name: "Accessories", value: 278 },
+    { name: "Others", value: 189 },
+  ];
+
   return (
     <div 
       className="min-h-screen w-full relative"
@@ -44,7 +76,7 @@ const Dashboard = () => {
       <div className="relative p-6">
         <h1 className="text-3xl font-bold mb-8 text-white">Dashboard Overview</h1>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="bg-black/20 backdrop-blur-md border border-white/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -61,6 +93,65 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Sales Trend Chart */}
+          <Card className="bg-black/20 backdrop-blur-md border border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white">Sales Trend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{ sales: { label: "Sales" } }}>
+                <LineChart data={salesData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-white/10" />
+                  <XAxis dataKey="name" stroke="white" />
+                  <YAxis stroke="white" />
+                  <ChartTooltip
+                    content={({ active, payload }) => (
+                      <ChartTooltipContent
+                        active={active}
+                        payload={payload}
+                        className="bg-black/80 text-white"
+                      />
+                    )}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="var(--color-chart-1)"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Product Categories Chart */}
+          <Card className="bg-black/20 backdrop-blur-md border border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white">Products All </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{ value: { label: "Products" } }}>
+                <BarChart data={productData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-white/10" />
+                  <XAxis dataKey="name" stroke="white" />
+                  <YAxis stroke="white" />
+                  <ChartTooltip
+                    content={({ active, payload }) => (
+                      <ChartTooltipContent
+                        active={active}
+                        payload={payload}
+                        className="bg-black/80 text-white"
+                      />
+                    )}
+                  />
+                  <Bar dataKey="value" fill="var(--color-chart-2)" />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
