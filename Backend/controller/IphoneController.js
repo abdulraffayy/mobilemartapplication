@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Iphone = require('../models/IphoneModels');
 
 exports.getAllIphones = async (req, res) => {
