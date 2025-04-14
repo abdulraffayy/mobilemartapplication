@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Users, ShoppingCart, DollarSign, Package } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, Package, LogOut } from "lucide-react";
 import BackgoundImage from "../../assets/rafayraja.avif"
 import {
   ChartContainer,
@@ -15,8 +15,19 @@ import {
   BarChart,
   Bar,
 } from "recharts";
+import { Button } from "../../components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
+
   const stats = [
     {
       title: "Total Users",
@@ -74,7 +85,17 @@ const Dashboard = () => {
     >
       <div className="absolute inset-0 bg-black/30" />
       <div className="relative p-6">
-        <h1 className="text-3xl font-bold mb-8 text-white">Dashboard Overview</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Dashboard Overview</h1>
+          <Button 
+            variant="outline" 
+            className="border-white/20 text-white hover:bg-white/10"
+            onClick={handleLogout}
+          >
+           
+            Logout
+          </Button>
+        </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           {stats.map((stat, index) => (

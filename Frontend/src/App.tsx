@@ -14,23 +14,51 @@ import Cookies from 'js-cookie';
 import ViewDetails from './Iphone/ViewDetails/ViewDetails';
 import PaymentMethod from './PaymentMethod/PaymentMethod';
 import AdminDashboard from './AddminDashboard/AdminDashboard';
+import { jwtDecode } from 'jwt-decode';
+
+interface DecodedToken {
+  role: string;
+  id: string;
+  exp: number;
+  iat: number;
+}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for existing token on initial load
     const token = Cookies.get('token');
-    setIsLoggedIn(!!token);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        setUserRole(decodedToken.role);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        Cookies.remove('token');
+        setIsLoggedIn(false);
+        setUserRole(null);
+      }
+    }
   }, []);
 
   const handleLogout = () => {
     Cookies.remove('token');
     setIsLoggedIn(false);
+    setUserRole(null);
   };
 
   const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     if (!isLoggedIn) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
+
+  const AdminRoute = ({ children }: { children: ReactNode }) => {
+    if (!isLoggedIn || userRole !== 'admin') {
       return <Navigate to="/login" replace />;
     }
     return children;
@@ -47,11 +75,31 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               
               {/* Admin Routes */}
-              <Route path="/AdminDashboard" element={<AdminDashboard />} />
-              <Route path="/admin/Iphone" element={<AdminDashboard />} />
-              <Route path="/admin/Android" element={<AdminDashboard />} />
-              <Route path="/admin/Laptops" element={<AdminDashboard />} />
-              <Route path="/admin/Acessories" element={<AdminDashboard />} />
+              <Route path="/AdminDashboard" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/Iphone" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/Android" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/Laptops" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/Acessories" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
 
               <Route
                 path="/iphone"

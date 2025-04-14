@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -10,14 +10,8 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // If user is already logged in, redirect to home
-    if (Cookies.get('token')) {
-      navigate('/AdminDashboard');
-    }
-  }, [navigate]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,6 +21,7 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
     }
 
     setError('');
+    setIsLoading(true);
 
     const apiUrl = 'http://localhost:5000/auth/login';
 
@@ -57,15 +52,14 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
       console.error('There was an error logging in:', error);
       setError('Invalid email or password. Please try again.');
       setSuccessMessage('');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
     navigate("/forgetpassword");
   };
-
-  // Only show Navbar if not on AdminDashboard
-
 
   return (
     <div
@@ -106,14 +100,18 @@ const Login = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) =
               Forgot Password?
             </span>
           </div>
+          
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
           <div className="flex items-center justify-between">
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
               type="submit"
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </div>
         </form>

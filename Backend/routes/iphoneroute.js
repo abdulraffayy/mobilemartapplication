@@ -1,16 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { getAllIphones, getClientById, updateClientById, createClient,  deleteClientById} = require('../controller/IphoneController');
+const { getAllIphones, getClientById, updateClientById, createClient, deleteClientById } = require('../controller/IphoneController');
 
-// This will be accessible at /api/iphones/iphone
+// Product routes
 router.get('/products', getAllIphones);
 router.get('/products/:id', getClientById);
-router.put('/products/:id', updateClientById);
+router.put('/products/iphones', updateClientById);
 router.delete('/products/:id', deleteClientById);
-router.post('/products/', createClient);
-
-
-
-
+router.post('/products', createClient);
 
 module.exports = router;

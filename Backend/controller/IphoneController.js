@@ -26,17 +26,45 @@ exports.getClientById = async (req, res) => {
 };
 
 exports.updateClientById = async (req, res) => {
-    const { id } = req.params; 
-    const updateData = req.body; 
     try {
-        const updatedClient = await Iphone.findByIdAndUpdate(id, updateData, { new: true }); 
-        if (!updatedClient) {
-            return res.status(404).json({ message: 'Client not found' }); 
+        const { id } = req.params;
+        const updateData = req.body;
+
+        // Check if ID is provided
+        if (!id) {
+            return res.status(400).json({ message: 'Product ID is required' });
         }
-        res.status(200).json(updatedClient); 
+
+        // Check if update data is provided
+        if (!updateData || Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: 'Update data is required' });
+        }
+
+        // Find and update the product
+        const updatedProduct = await Iphone.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Product updated successfully',
+            data: updatedProduct
+        });
     } catch (error) {
-        console.error('Error updating client:', error);
-        res.status(500).json({ message: 'Internal server error' }); 
+        console.error('Error updating product:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid product ID format' });
+        }
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: error.message });
+        }
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 

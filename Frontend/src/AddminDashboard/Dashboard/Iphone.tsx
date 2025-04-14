@@ -69,6 +69,25 @@ const Iphone = () => {
       setDeleteDialogOpen(false);
       setProductToDelete(null);
       toast.success('Product deleted successfully');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
     } catch (error) {
       console.error('Error deleting product:', error);
       toast.error('Failed to delete product');
