@@ -26,17 +26,22 @@ const Signup = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/auth/signup', userData);
-      console.log('Signup successful:', response.data);
-      setSuccessMessage('Signup successful!'); // Show success message
-      setErrorMessage(''); // Clear any previous error message
-      
-      // Navigate to the Login page after successful signup
-      navigate('/login'); // Navigate to the Login page
-
-    } catch (error) {
-      console.error('There was an error signing up:', error);
-      setErrorMessage('There was an error signing up. Please try again.'); // Show error message
-      setSuccessMessage(''); // Clear any previous success message
+      if (response.data.message === "User registered successfully") {
+        setSuccessMessage('Signup successful! Please login.');
+        setErrorMessage('');
+        // Navigate to the Login page after successful signup
+        navigate('/login');
+      } else {
+        setErrorMessage('Signup failed. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('An error occurred during signup. Please try again.');
+      }
+      setSuccessMessage('');
     }
   };
 

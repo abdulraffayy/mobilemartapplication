@@ -188,5 +188,4 @@ const Iphone: React.FC = () => {
   );
 };
 
-export default Iphone;
-// export default Iphone;
+export default Iphone;// export default Iphone;

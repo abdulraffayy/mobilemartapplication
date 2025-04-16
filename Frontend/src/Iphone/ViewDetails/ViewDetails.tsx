@@ -57,7 +57,7 @@ const ViewDetails: React.FC = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product);
-      navigate("/cart");
+      navigate("/iphone");
     }
   };
 
