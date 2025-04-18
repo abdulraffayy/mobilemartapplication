@@ -47,27 +47,41 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' }); 
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid email or password' 
+      }); 
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' }); 
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid email or password' 
+      }); 
     }
 
     const token = jwt.sign({ 
       id: user._id,
       role: user.role 
-    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    }, process.env.JWT_SECRET, { expiresIn: '1d' });
     
     return res.json({ 
-      email: user.email, 
+      success: true,
+      token,
       role: user.role,
-      token: token 
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.fullName
+      }
     }); 
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Server error' }); 
+    return res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    }); 
   }
 };
 

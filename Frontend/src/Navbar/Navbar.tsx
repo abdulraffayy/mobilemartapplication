@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FaHome,
   FaApple,
@@ -13,12 +13,14 @@ import {
 } from 'react-icons/fa';
 import { useCart } from '../cartContext/CartContext';
 import Cart from '../cartContext/cart';
+import { toast } from 'react-hot-toast';
 
 interface NavbarProps {
   onLogout: () => void;
 }
 
 const Navbar = ({ onLogout }: NavbarProps) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,6 +38,14 @@ const Navbar = ({ onLogout }: NavbarProps) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    onLogout();
+    toast.success('Logged out successfully');
+    navigate('/login');
+    setIsOpen(false);
+  };
 
   const navItems = [
     { name: 'Home', icon: <FaHome />, to: '/home' },
@@ -90,7 +100,7 @@ const Navbar = ({ onLogout }: NavbarProps) => {
             </button>
 
             <button
-              onClick={onLogout}
+              onClick={handleLogout}
               className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-colors duration-200 text-sm lg:text-base"
               aria-label="Logout"
             >
@@ -146,10 +156,7 @@ const Navbar = ({ onLogout }: NavbarProps) => {
               ))}
               <li>
                 <button
-                  onClick={() => {
-                    onLogout();
-                    setIsOpen(false);
-                  }}
+                  onClick={handleLogout}
                   className="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-colors duration-200"
                 >
                   <FaUserAlt className="mr-3" />

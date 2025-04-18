@@ -9,6 +9,9 @@ interface Product {
   storage: string;
   inStock: boolean;
   url: string;
+  description?: string;
+  updatedAt: string;
+  createdAt: string;
 }
 
 interface CartItem extends Product {
@@ -51,7 +54,13 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
         );
       }
       
-      return [...prevCart, { ...product, quantity: 1 }];
+      return [...prevCart, { 
+        ...product, 
+        quantity: 1,
+        description: product.description || '',
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      }];
     });
   };
 

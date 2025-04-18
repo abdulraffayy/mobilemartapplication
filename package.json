@@ -1,9 +1,0 @@
-{
-  "devDependencies": {
-    "@types/prop-types": "^15.7.14"
-  },
-  "dependencies": {
-    "nodemailer": "^6.10.0",
-    "recharts": "^2.15.2"
-  }
-}

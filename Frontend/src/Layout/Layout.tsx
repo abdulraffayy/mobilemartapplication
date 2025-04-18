@@ -11,23 +11,25 @@ interface LayoutProps {
 const Layout = ({ children, isLoggedIn, onLogout }: LayoutProps) => {
   const location = useLocation();
   const hideNavbarPaths = [
+    '/login',
+    '/',  // Also hide on root path since it redirects to login
+    '/signup',
+    '/forgetpassword',
     '/AdminDashboard',
     '/admin/Acessories',
     '/admin/Laptops',
     '/admin/Android',
-    '/admin/Iphone',
-    '/login',
-    '/signup',
-    '/forgetpassword'
+    '/admin/Iphone'
   ];
+
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
   return (
     <>
-      {isLoggedIn && !shouldHideNavbar && <Navbar onLogout={onLogout} />}
-      <div className=''>
+      {!shouldHideNavbar && isLoggedIn && <Navbar onLogout={onLogout} />}
+      <main>
         {children}
-      </div>
+      </main>
     </>
   );
 };

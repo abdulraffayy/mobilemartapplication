@@ -14,7 +14,14 @@ import {
   ResponsiveContainer,
   Cell,
   LineChart,
-  Line
+  Line,
+  PieProps,
+  TooltipProps,
+  LegendProps,
+  XAxisProps,
+  YAxisProps,
+  LineProps,
+  BarProps
 } from 'recharts';
 
 // Define data interfaces
@@ -35,14 +42,14 @@ interface LineDataItem {
   profit: number;
 }
 
-// Add type assertions for Recharts components
-const RechartsPie = Pie as any;
-const RechartsTooltip = Tooltip as any;
-const RechartsLegend = Legend as any;
-const RechartsXAxis = XAxis as any;
-const RechartsYAxis = YAxis as any;
-const RechartsLine = Line as any;
-const RechartsBar = Bar as any;
+// Create typed components
+const TypedPie = Pie as unknown as React.ComponentType<PieProps>;
+const TypedTooltip = Tooltip as unknown as React.ComponentType<TooltipProps<string, number>>;
+const TypedLegend = Legend as unknown as React.ComponentType<LegendProps>;
+const TypedXAxis = XAxis as unknown as React.ComponentType<XAxisProps>;
+const TypedYAxis = YAxis as unknown as React.ComponentType<YAxisProps>;
+const TypedLine = Line as unknown as React.ComponentType<LineProps>;
+const TypedBar = Bar as unknown as React.ComponentType<BarProps>;
 
 const Dashboard = () => {
   const stats = [
@@ -105,7 +112,7 @@ const Dashboard = () => {
 
   return (
     <div 
-      className="min-h-screen w-full relative"
+      className="min-h-screen w-full relative overflow-x-hidden"
       style={{
         backgroundImage: `url(${BackgoundImage})`,
         backgroundSize: 'cover',
@@ -114,8 +121,9 @@ const Dashboard = () => {
       }}
     >
       <div className="absolute inset-0 bg-black/30" />
-      <div className="relative p-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="relative p-4 sm:p-6">
+        {/* Stats Grid - Responsive */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="bg-black/20 backdrop-blur-md border border-white/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,7 +133,7 @@ const Dashboard = () => {
                 <stat.icon className="h-4 w-4 text-white/70" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                <div className="text-xl sm:text-2xl font-bold text-white">{stat.value}</div>
                 <p className="text-xs text-white/70">
                   {stat.description}
                 </p>
@@ -134,17 +142,18 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        {/* Charts Grid - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Pie Chart */}
           <Card className="bg-black/20 backdrop-blur-md border border-white/20">
             <CardHeader>
-              <CardTitle className="text-white">Electronics Categories Distribution</CardTitle>
+              <CardTitle className="text-white text-lg sm:text-xl">Electronics Categories Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
+              <div className="h-[250px] sm:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <RechartsPie
+                    <TypedPie
                       data={pieData}
                       cx="50%"
                       cy="50%"
@@ -157,15 +166,15 @@ const Dashboard = () => {
                       {pieData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
-                    </RechartsPie>
-                    <RechartsTooltip 
+                    </TypedPie>
+                    <TypedTooltip 
                       contentStyle={{ 
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         color: '#ffffff'
                       }}
                     />
-                    <RechartsLegend wrapperStyle={{ color: '#ffffff' }} />
+                    <TypedLegend wrapperStyle={{ color: '#ffffff' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -175,10 +184,10 @@ const Dashboard = () => {
           {/* Bar Chart */}
           <Card className="bg-black/20 backdrop-blur-md border border-white/20">
             <CardHeader>
-              <CardTitle className="text-white">Sales & Orders Overview</CardTitle>
+              <CardTitle className="text-white text-lg sm:text-xl">Sales & Orders Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
+              <div className="h-[250px] sm:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={barData}
@@ -190,25 +199,25 @@ const Dashboard = () => {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <RechartsXAxis 
+                    <TypedXAxis 
                       dataKey="name" 
                       stroke="#ffffff"
                       tick={{ fill: '#ffffff' }}
                     />
-                    <RechartsYAxis 
+                    <TypedYAxis 
                       stroke="#ffffff"
                       tick={{ fill: '#ffffff' }}
                     />
-                    <RechartsTooltip 
+                    <TypedTooltip 
                       contentStyle={{ 
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         color: '#ffffff'
                       }}
                     />
-                    <RechartsLegend wrapperStyle={{ color: '#ffffff' }} />
-                    <RechartsBar dataKey="sales" fill="#8884d8" />
-                    <RechartsBar dataKey="orders" fill="#82ca9d" />
+                    <TypedLegend wrapperStyle={{ color: '#ffffff' }} />
+                    <TypedBar dataKey="sales" fill="#8884d8" />
+                    <TypedBar dataKey="orders" fill="#82ca9d" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -216,12 +225,12 @@ const Dashboard = () => {
           </Card>
 
           {/* Line Chart - Full Width */}
-          <Card className="bg-black/20 backdrop-blur-md border border-white/20 col-span-2">
+          <Card className="bg-black/20 backdrop-blur-md border border-white/20 lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-white">Weekly Revenue & Profit</CardTitle>
+              <CardTitle className="text-white text-lg sm:text-xl">Weekly Revenue & Profit</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] w-full">
+              <div className="h-[300px] sm:h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={lineData}
@@ -233,24 +242,24 @@ const Dashboard = () => {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <RechartsXAxis 
+                    <TypedXAxis 
                       dataKey="name"
                       stroke="#ffffff"
                       tick={{ fill: '#ffffff' }}
                     />
-                    <RechartsYAxis 
+                    <TypedYAxis 
                       stroke="#ffffff"
                       tick={{ fill: '#ffffff' }}
                     />
-                    <RechartsTooltip 
+                    <TypedTooltip 
                       contentStyle={{ 
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         color: '#ffffff'
                       }}
                     />
-                    <RechartsLegend wrapperStyle={{ color: '#ffffff' }} />
-                    <RechartsLine 
+                    <TypedLegend wrapperStyle={{ color: '#ffffff' }} />
+                    <TypedLine 
                       type="monotone" 
                       dataKey="revenue" 
                       stroke="#8884d8" 
@@ -258,7 +267,7 @@ const Dashboard = () => {
                       dot={{ fill: '#8884d8', r: 4 }}
                       activeDot={{ r: 6 }}
                     />
-                    <RechartsLine 
+                    <TypedLine 
                       type="monotone" 
                       dataKey="profit" 
                       stroke="#82ca9d" 

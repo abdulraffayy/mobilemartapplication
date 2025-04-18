@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useCart } from "../../cartContext/CartContext";
 import {
   Card,
@@ -11,6 +11,7 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Skeleton } from "../../components/ui/skeleton";
+import { toast } from "react-hot-toast";
 
 interface Product {
   _id: string;
@@ -31,19 +32,31 @@ const ViewDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const apiUrl = `http://localhost:5000/api/products/${id}`;
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error("Failed to fetch product");
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error("Product not found in the database");
+          } else if (response.status === 500) {
+            throw new Error("Server error occurred");
+          } else {
+            throw new Error(`Failed to fetch product: ${response.statusText}`);
+          }
+        }
 
         const data = await response.json();
+        if (!data) {
+          throw new Error("No product data received");
+        }
         setProduct(data);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Unknown error");
+        console.error("Error fetching product:", error);
+        setError(error instanceof Error ? error.message : "Unknown error occurred");
       } finally {
         setLoading(false);
       }
@@ -57,7 +70,16 @@ const ViewDetails: React.FC = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product);
-      navigate("/iphone");
+      toast.success(`${product.name} added to cart!`, {
+        duration: 2000,
+        position: "top-center",
+        style: {
+          background: "#4CAF50",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "8px",
+        },
+      });
     }
   };
 

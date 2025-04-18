@@ -34,18 +34,14 @@ const Cart: React.FC<CartProps> = ({ onClose }) => {
     const fetchCartProducts = async () => {
       try {
         setLoading(true);
-        const products = await Promise.all(
-          cart.map(async (item) => {
-            const response = await axios.get<Product>(`http://localhost:5000/api/products/${item._id}`);
-            return {
-              ...response.data,
-              quantity: item.quantity
-            };
-          })
-        );
-        setCartProducts(products);
+        // Use the cart items directly since they now contain complete product information
+        setCartProducts(cart.map(item => ({
+          ...item,
+          quantity: item.quantity
+        })));
       } catch (error) {
-        console.error("Error fetching cart products:", error);
+        console.error("Error processing cart products:", error);
+        setCartProducts([]);
       } finally {
         setLoading(false);
       }

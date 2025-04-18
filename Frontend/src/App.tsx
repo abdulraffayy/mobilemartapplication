@@ -14,6 +14,16 @@ import Cookies from 'js-cookie';
 import ViewDetails from './Iphone/ViewDetails/ViewDetails';
 import PaymentMethod from './PaymentMethod/PaymentMethod';
 import AdminDashboard from './AddminDashboard/AdminDashboard';
+import { jwtDecode } from 'jwt-decode';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+
+interface DecodedToken {
+  role: string;
+  id: string;
+  exp: number;
+  iat: number;
+}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,7 +31,16 @@ function App() {
   useEffect(() => {
     // Check for existing token on initial load
     const token = Cookies.get('token');
-    setIsLoggedIn(!!token);
+    if (token) {
+      try {
+        jwtDecode<DecodedToken>(token);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        Cookies.remove('token');
+        setIsLoggedIn(false);
+      }
+    }
   }, []);
 
   const handleLogout = () => {
@@ -30,68 +49,112 @@ function App() {
   };
 
   const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-    if (!isLoggedIn) {
+    const token = Cookies.get('token');
+    if (!token) {
       return <Navigate to="/login" replace />;
     }
     return children;
   };
 
+  const AdminRoute = ({ children }: { children: ReactNode }) => {
+    const token = Cookies.get('token');
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
+
+    try {
+      const decodedToken = jwtDecode<DecodedToken>(token);
+      if (decodedToken.role !== 'admin') {
+        return <Navigate to="/login" replace />;
+      }
+      return children;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      Cookies.remove('token');
+      return <Navigate to="/login" replace />;
+    }
+  };
+
   return (
     <Router>
-      <CartProvider>
-        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-          <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
-            <Routes>
-              <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-              <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-              <Route path="/signup" element={<Signup />} />
-              
-              {/* Admin Routes */}
-              <Route path="/AdminDashboard" element={<AdminDashboard />} />
-              <Route path="/admin/Iphone" element={<AdminDashboard />} />
-              <Route path="/admin/Android" element={<AdminDashboard />} />
-              <Route path="/admin/Laptops" element={<AdminDashboard />} />
-              <Route path="/admin/Acessories" element={<AdminDashboard />} />
+      <AuthProvider>
+        <Toaster position="top-right" />
+        <CartProvider>
+          <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+            <Layout isLoggedIn={isLoggedIn} onLogout={handleLogout}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path="/signup" element={<Signup />} />
+                
+                {/* Admin Routes */}
+                <Route path="/AdminDashboard" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/Iphone" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/Android" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/Laptops" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/Acessories" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
 
-              <Route
-                path="/iphone"
-                element={
-                  <ProtectedRoute>
-                    <Iphone />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/viewdetails/:id"
-                element={
-                  <ProtectedRoute>
-                    <ViewDetails />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/home"
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/paymentMethod"
-                element={
-                  <ProtectedRoute>
-                    <PaymentMethod />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/forgetpassword" element={<ForgetPassword />} />
-              <Route path="/otp" element={<Otp />} />
-              <Route path="/resetpassword" element={<ResetPassword />} />
-            </Routes>
-          </Layout>
-        </div>
-      </CartProvider>
+                {/* Protected Routes */}
+                <Route
+                  path="/iphone"
+                  element={
+                    <ProtectedRoute>
+                      <Iphone />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/viewdetails/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ViewDetails />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/payment"
+                  element={
+                    <ProtectedRoute>
+                      <PaymentMethod />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/home"
+                  element={
+                    <ProtectedRoute>
+                      <Home />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/forgetpassword" element={<ForgetPassword />} />
+                <Route path="/otp" element={<Otp />} />
+                <Route path="/resetpassword" element={<ResetPassword />} />
+              </Routes>
+            </Layout>
+          </div>
+        </CartProvider>
+      </AuthProvider>
     </Router>
   );
 }
