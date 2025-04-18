@@ -1,5 +1,5 @@
 import { Card, CardContent } from "../../components/ui/card";
-import { Plus, Trash2, Check, X } from "lucide-react";
+import { Plus, Trash2, Check, X, Pencil } from "lucide-react";
 import BackgoundImage from "../../assets/rafayraja.avif"
 import { Button } from "../../components/ui/button";
 import {
@@ -21,24 +21,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
-import { Radar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
+  CategoryScale,
+  LinearScale,
   PointElement,
   LineElement,
-  Filler,
+  Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
-  RadialLinearScale,
+  CategoryScale,
+  LinearScale,
   PointElement,
   LineElement,
-  Filler,
+  Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 interface Product {
@@ -57,54 +61,52 @@ const Iphone = () => {
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
 
-  const radarData = {
-    labels: ['Sales', 'Revenue', 'Stock', 'Customers', 'Growth', 'Engagement'],
+  const areaChartData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
     datasets: [
       {
-        label: 'iPhone Performance',
-        data: [85, 75, 90, 80, 70, 85],
+        label: 'iPhone Sales',
+        data: [65, 59, 80, 81, 56, 55, 40],
+        fill: true,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
-        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+        tension: 0.4,
       },
     ],
   };
 
-  const radarOptions = {
-    scales: {
-      r: {
-        beginAtZero: true,
-        max: 100,
-        ticks: {
-          stepSize: 20,
-          color: 'rgba(255, 255, 255, 0.7)',
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-        angleLines: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-        pointLabels: {
-          color: 'rgba(255, 255, 255, 0.9)',
-          font: {
-            size: 12,
-          },
-        },
-      },
-    },
+  const areaChartOptions = {
+    responsive: true,
     plugins: {
       legend: {
+        position: 'top' as const,
         labels: {
           color: 'rgba(255, 255, 255, 0.9)',
           font: {
             size: 14,
           },
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+        ticks: {
+          color: 'rgba(255, 255, 255, 0.7)',
+        },
+      },
+      x: {
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+        ticks: {
+          color: 'rgba(255, 255, 255, 0.7)',
         },
       },
     },
@@ -152,6 +154,16 @@ const Iphone = () => {
     setProductToDelete(null);
   };
 
+  const handleEditClick = (product: Product) => {
+    setProductToEdit(product);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    setEditDialogOpen(false);
+    setProductToEdit(null);
+  };
+
   return (
     <div 
       className="min-h-screen w-full relative"
@@ -166,23 +178,29 @@ const Iphone = () => {
       <div className="relative p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-white">iPhone Products</h1>
-          <Button className="bg-green-600 hover:bg-green-700 h-8">
+        </div>
+
+        <Card className="border border-white/20 max-w-2xl mx-auto mb-8">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold text-white mb-4 text-center">iPhone Sales Performance</h2>
+            <div className="h-[400px] w-full">
+              <Line data={areaChartData} options={areaChartOptions} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex items-center justify-around mb-4 ml-200">
+          <Button className="bg-black/20 backdrop-blur-md border border-white/20 hover:bg-black/30 transition-colors duration-200 cursor-pointer h-8 text-white p-2">
             <Plus className="mr-2 h-3 w-3" />
             Add Product
           </Button>
         </div>
 
-        <Card className="bg-black/20 backdrop-blur-md border border-white/20 max-w-2xl mx-auto mb-8">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-semibold text-white mb-4 text-center">iPhone Performance Metrics</h2>
-            <div className="h-[400px] w-full">
-              <Radar data={radarData} options={radarOptions} />
-            </div>
-          </CardContent>
-        </Card>
-
         <Card className="bg-black/20 backdrop-blur-md border border-white/20 max-w-4xl mx-auto">
           <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-white">Products List</h2>
+            </div>
             <Table className="w-full">
               <TableHeader>
                 <TableRow className="hover:bg-transparent h-8">
@@ -192,7 +210,7 @@ const Iphone = () => {
                   <TableHead className="text-white w-24 py-1">Color</TableHead>
                   <TableHead className="text-white w-24 py-1">Storage</TableHead>
                   <TableHead className="text-white w-24 py-1">Stock</TableHead>
-                  <TableHead className="text-white w-16 py-1">Actions</TableHead>
+                  <TableHead className="text-white w-24 py-1">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -232,14 +250,24 @@ const Iphone = () => {
                         </span>
                       </TableCell>
                       <TableCell className="py-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-5 w-5"
-                          onClick={() => handleDeleteClick(product)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 h-5 w-5"
+                            onClick={() => handleEditClick(product)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-5 w-5"
+                            onClick={() => handleDeleteClick(product)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -274,6 +302,35 @@ const Iphone = () => {
             >
               <Check className="h-4 w-4" />
               <span>Delete</span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-md bg-black/80 backdrop-blur-md border border-white/20 rounded-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl font-semibold">Edit Product</DialogTitle>
+            <DialogDescription className="text-white/80 mt-2">
+              Edit the details of <span className="text-blue-400 font-medium">{productToEdit?.name}</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 mt-6">
+            <Button
+              variant="outline"
+              onClick={handleEditCancel}
+              className="border-white/20 text-white bg-black/40 px-4 py-2 rounded-md transition-all duration-200 flex items-center space-x-2 text-base font-medium"
+            >
+              <X className="h-4 w-4" />
+              <span>Cancel</span>
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleEditCancel}
+              className="bg-blue-600/80 text-white px-4 py-2 rounded-md transition-all duration-200 flex items-center space-x-2 text-base font-medium"
+            >
+              <Check className="h-4 w-4" />
+              <span>Save Changes</span>
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -5,7 +5,7 @@ const { getAllIphones, getClientById, updateClientById, createClient, deleteClie
 // Product routes
 router.get('/products', getAllIphones);
 router.get('/products/:id', getClientById);
-router.put('/products/iphones', updateClientById);
+router.patch('/products/iphones', updateClientById);
 router.delete('/products/:id', deleteClientById);
 router.post('/products', createClient);
 
